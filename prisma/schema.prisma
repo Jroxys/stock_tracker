@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username String
+  telegramId String  @unique
+  watches   Watch[]
+}
+
+model Product {
+  id    Int    @id @default(autoincrement())
+  url   String @unique
+  name  String?
+  watches Watch[]
+}
+
+model Watch {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  active    Boolean @default(true)
+  lastChecked DateTime?
+
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+}
